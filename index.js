@@ -33,13 +33,10 @@ restartButton.addEventListener('click', () => {
 function startQuiz() {
   const amount = 5;
   const category = categorySelect.value;
-  const difficulty = "easy"; 
-  const type = "multiple";  
+  const difficulty = "medium";
+  const type = "multiple";
 
-  let apiURL = `https://opentdb.com/api.php?amount=${amount}`;
-  if (category) apiURL += `&category=${category}`;
-  if (difficulty) apiURL += `&difficulty=${difficulty}`;
-  if (type) apiURL += `&type=${type}`;
+  let apiURL = `https://opentdb.com/api.php?amount=${amount}${category ? `&category=${category}` : ''}${difficulty ? `&difficulty=${difficulty}` : ''}${type ? `&type=${type}` : ''}`;
 
   fetch(apiURL)
     .then(res => res.json())
@@ -56,16 +53,25 @@ function startQuiz() {
       showQuestion();
     })
     .catch(error => {
-      console.log("Error fetching questions:", error);
-      alert("Couldn't load quiz. Try again later.");
+      console.error("Error fetching questions from API:", error);
+      alert(`Couldn't load quiz. Error: ${error.message || "Unknown error"}. Please check your internet connection or try again later.`);
     });
 }
 
 function showQuestion() {
-  clearInterval(questionTimer);
+  if (questionTimer) {
+    clearInterval(questionTimer);
+  }
+
   feedbackBox.innerText = '';
   nextBtn.classList.add('hidden');
-  answersUl.innerHTML = '';
+
+  if (questions.length === 0) {
+    alert("No questions available. Please try again later.");
+    quizDiv.classList.add('hidden');
+    startDiv.classList.remove('hidden');
+    return;
+  }
 
   if (currentIndex >= questions.length) {
     endQuiz();
@@ -87,31 +93,18 @@ function showQuestion() {
   let qData = questions[currentIndex];
   let question = decodeHTML(qData.question);
   let correct = decodeHTML(qData.correct_answer);
-  let choices = qData.incorrect_answers.map(decodeHTML);
-  choices.push(correct);
-  choices.sort(() => Math.random() - 0.5);
+  let incorrect = qData.incorrect_answers.map(ans => decodeHTML(ans));
+  let choices = fisherYatesShuffle([correct, ...incorrect]);
 
   questionBox.innerText = question;
+  answersUl.innerHTML = '';
 
-  for (let i = 0; i < choices.length; i++) {
+  choices.forEach(choice => {
     let li = document.createElement('li');
-    li.innerText = choices[i];
-
-    li.addEventListener('click', function () {
-      clearInterval(questionTimer);
-      if (li.innerText === correct) {
-        feedbackBox.innerText = "Correct answer 🎉";
-        totalScore++;
-      } else {
-        feedbackBox.innerText = "incorrect😔 Correct answer is: " + correct;
-        missedQs.push({ q: question, a: correct });
-      }
-
-      nextBtn.classList.remove('hidden');
-    });
-
+    li.innerText = choice;
+    li.addEventListener('click', () => handleAnswerSelection(li, correct, question));
     answersUl.appendChild(li);
-  }
+  });
 }
 
 function updateTimer() {
@@ -124,17 +117,32 @@ function endQuiz() {
 
   let totalTime = Math.round((Date.now() - totalTimeStart) / 1000);
   scoreText.innerText = `${totalScore} / ${questions.length} (Time: ${totalTime}s)`;
+  missedList.innerHTML = missedQs.map(miss => `<p><strong>Q:</strong> ${miss.q}<br><strong>A:</strong> ${miss.a}</p>`).join('');
+}
 
-  missedList.innerHTML = "<h3>What you missed:</h3>";
-  for (let i = 0; i < missedQs.length; i++) {
-    let p = document.createElement('p');
-    p.innerText = missedQs[i].q + " — Answer: " + missedQs[i].a;
-    missedList.appendChild(p);
+function handleAnswerSelection(selectedLi, correctAnswer, questionText) {
+  clearInterval(questionTimer);
+  if (selectedLi.innerText.trim() === correctAnswer.trim()) {
+    feedbackBox.innerText = "Correct answer 🎉";
+    totalScore++;
+  } else {
+    feedbackBox.innerText = "Incorrect 😔. The correct answer is: " + correctAnswer;
+    missedQs.push({ q: questionText, a: correctAnswer });
   }
+  nextBtn.classList.remove('hidden');
 }
 
 function decodeHTML(str) {
-  let txt = document.createElement("textarea");
+  const txt = document.createElement("textarea");
   txt.innerHTML = str;
   return txt.value;
+}
+
+function fisherYatesShuffle(array) {
+  const arrayCopy = [...array];
+  for (let i = arrayCopy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arrayCopy[i], arrayCopy[j]] = [arrayCopy[j], arrayCopy[i]];
+  }
+  return arrayCopy;
 }
