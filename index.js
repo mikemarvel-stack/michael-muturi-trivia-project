@@ -31,10 +31,12 @@ restartButton.addEventListener('click', () => {
 });
 
 function startQuiz() {
-  const amount = 5;
+  const amount = 10;
   const category = categorySelect.value;
   const difficulty = "medium";
   const type = "multiple";
+  const difficulty = "medium"; 
+  const type = "multiple";  
 
   let apiURL = `https://opentdb.com/api.php?amount=${amount}${category ? `&category=${category}` : ''}${difficulty ? `&difficulty=${difficulty}` : ''}${type ? `&type=${type}` : ''}`;
 
@@ -78,7 +80,7 @@ function showQuestion() {
     return;
   }
 
-  timeLeft = 15;
+  timeLeft = 10;
   updateTimer();
   questionTimer = setInterval(() => {
     timeLeft--;
@@ -130,6 +132,13 @@ function handleAnswerSelection(selectedLi, correctAnswer, questionText) {
     missedQs.push({ q: questionText, a: correctAnswer });
   }
   nextBtn.classList.remove('hidden');
+
+  missedList.innerHTML = "<h3>Here is what you missed:</h3>";
+  for (let i = 0; i < missedQs.length; i++) {
+    let p = document.createElement('p');
+    p.innerText = missedQs[i].q + " — Answer: " + missedQs[i].a;
+    missedList.appendChild(p);
+  }
 }
 
 function decodeHTML(str) {
