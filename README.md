@@ -1,4 +1,4 @@
-# Trivia Quiz Project - Michael Muturi
+# michael-muturi-trivia-project
 
 Welcome to the **Trivia Quiz Game**! This is an interactive web-based quiz application that allows users to test their knowledge on various topics through fun and challenging questions.
 ![alt text](<Screenshot .png>)
@@ -6,19 +6,19 @@ Welcome to the **Trivia Quiz Game**! This is an interactive web-based quiz appli
 
 ## 🚀 Features
 
-- ✅ Start screen with quiz setup (number of questions, category, difficulty, and type)
+- ✅ Start screen with quiz setup (category, difficulty)
 - ✅ Dynamically fetched trivia questions from the Open Trivia DB API
 - ✅ One question at a time with multiple choice answers
 - ✅ Timer for each question and total quiz duration
 - ✅ Instant feedback on selected answers
-- ✅ Final score summary with correct answers recap
-- ✅ Restart the quiz anytime
+- ✅ Final score summary with correct answers recap for failed questions
+- ✅ user can choose to restart quiz with the same or different settings set up
 
 ---
 
 ## 🧠 Bonus Features
 
-- Select category, difficulty, number, and type of questions
+- Select category for type of questions
 - Countdown timer per question
 - Total quiz time tracker
 - Responsive and user-friendly UI
@@ -44,17 +44,13 @@ cd michael-muturi-trivia-project
 This project is deployed on GitHub Pages:  
 ➡️ https://mikemarvel-stack.github.io/michael-muturi-trivia-project/
 
-> Make sure the `gh-pages` branch is active for deployment.
-
----
-
 ## 📁 Project Structure
 
 ```bash
 michael-muturi-trivia-project/
  index.html         # Main HTML file
  styles.css         # Stylesheet
- index.js           # JavaScript logic
+ index.js           # JavaScript
  assets/            # Images and icons
 ```
 
@@ -87,14 +83,6 @@ michael-muturi-trivia-project/
 **Michael Muturi**  
 Software Development Fundamentals Student 
 GitHub: [@mikemarvel-stack](hhttps://github.com/mikemarvel-stack)
-
----
-
-## 📜 License
-
-This project is licensed under the [MIT License](LICENSE).
-
----
 
 ## 🙌 Acknowledgements
 
